@@ -1,7 +1,7 @@
 const axios = require("axios");// kutuphane tanımladık
 var apiSecenekleri = { 
     //sunucu: "http://localhost:3001",
-    sunucu: "https://mekanbul.esraaydogan4.repl.co", // bunu ben yapıştırdım
+    sunucu: "https://mekanbull.esraaydogan4.repl.co", // bunu ben yapıştırdım
     apiYolu: "/api/mekanlar/"
 }
 var mesafeyiFormatla = function(mesafe){
