@@ -1,6 +1,7 @@
 var createError = require('http-errors'); // sıralama önemli
 require('./app_api/models/db');
 var express = require('express');
+var session = require('express-session');// import ettik
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -8,13 +9,20 @@ var logger = require('morgan');
 var indexRouter = require('./app_server/routes/index');
 var usersRouter = require('./app_server/routes/users'); // kullanıcı işlemlerri burada yapılacak
 var apiRouter = require('./app_api/routes/index'); //indexi önce app.js e tanıymalıyız
+const { use } = require('chai');
 var app = express(); 
+
 
 // view engine setup
 app.set('views', path.join(__dirname,'app_server' ,'views'));
 app.set('view engine', 'pug');
-
-app.use(logger('dev'));
+app.use(session({
+  secret: 'gizli',
+  cookie: {maxAge:100*60*60*24}, // bir gün süre sonra oturumu kapat
+  resave: true,
+  saveUninitalized: true
+}));
+app.use(logger('dev'));// kullanılan kütüphanler
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/api",apiRouter); // 12 den aldık buraya taşıdık

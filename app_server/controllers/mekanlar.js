@@ -81,18 +81,43 @@ var hataGoster = function (res, hata){
 const mekanBilgisi=function(req, res) {
     axios
         .get(apiSecenekleri.sunucu + apiSecenekleri.apiYolu + req.params.mekanid)
-        .then( function (response) {
+        .then( function (response) {// mekan bilgisi başarılı bir şekilde geldi
+            req.session.mekanAdi = response.data.ad;
             detaySayfasiOlustur(res, response.data);
         })
         .catch( function (hata) {
             hataGoster (res, hata);
         });
 };
-const yorumEkle=function(req, res, next) {
-    res.render('yorumekle', { title: 'Yorum Ekle' });
+const yorumEkle=function(req, res) {
+    var mekanAdi = req.session.mekanAdi;
+    var mekanid = req.params.mekaid;
+    if(!mekanAdi){
+        res.redirect("/mekan/"+mekanid); // mekanın olduğu sayfaya yönlendirdik
+    } else
+    res.render("yorumekle", {"baslik":mekanAdi+" mekanına yorum ekle", title:"Yorum Sayfası" });
+}
+const yorumumuEkle=function(req, res, next) {
+    var gonderilenYorum,mekanid;
+    mekanid=req.params.mekanid;
+    if(!req.body.adsoyad || !req.body.yorum){
+        req.redirect("/mekan/"+mekanid+"/yorum/yeni?hata=evet");
+    } else {
+        gonderilenYorum = {
+            yorumYapan: req.body.adsoyad,
+            puan:req.body.puan,
+            yorumMetni: req.body.yorum
+        }
+        axios
+        .post(apiSecenekleri.sunucu+apiSecenekleri.apiYolu+mekanid+"/yorumlar",gonderilenYorum)
+        .then(function(){
+            res.redirect("/mekan/"+mekanid);
+        }); //apinin tam yolu
+    }
 }
 module.exports={
     anaSayfa,
     mekanBilgisi,
     yorumEkle,
+    yorumumuEkle
 }
